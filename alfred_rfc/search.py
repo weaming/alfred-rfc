@@ -7,7 +7,7 @@ import argparse
 from workflow import Workflow3
 from workflow import ICON_WEB
 
-default_fields = ['text', 'status', 'note_with_text', 'name']
+default_fields = ['name', 'status', 'text', 'note_with_text']
 
 
 def read_package_data(path):
@@ -22,6 +22,10 @@ data = json.loads(data)
 
 
 def search_rfc(query, limit):
+    is_all = os.getenv('ALFRED_ALL')
+    if is_all:
+        return data
+
     results = search_values(data, query.split(' '), limit=limit)
     return results
 
@@ -34,32 +38,33 @@ def search_values(data, query_words, fields=None, limit=20):
 
     rv = []
     for item in data:
-        for k in item.keys():
-            # check limit
-            if len(rv) >= limit:
-                return rv
+        # check limit
+        if len(rv) >= limit:
+            return rv
 
+        text_list = []
+        for k in item.keys():
             # check field
             if k not in fields:
                 continue
             v = item[k]
+            if v:
+                text_list.append(v)
 
-            if v and all(w.lower() in v.lower() for w in query_words):
-                rv.append(item)
-                break
+        text_full = ' '.join(text_list)
+        if all(w.lower() in text_full.lower() for w in query_words):
+            rv.append(item)
+
     return rv
 
 
-def main_search_rfc(wf, all=False):
+def main_search_rfc(wf):
     if len(wf.args):
         query = wf.args[0]
     elif not all:
         return
 
-    if all:
-        results = data
-    else:
-        results = search_rfc(query, 30)
+    results = search_rfc(query, 30)
 
     for r in results:
         # see https://www.deanishe.net/alfred-workflow/api/index.html#workflow.Workflow.add_item
@@ -92,8 +97,7 @@ def main_cli():
 def main():
     if os.getenv('BY_ALFRED'):
         wf = Workflow3()
-        is_all = os.getenv('ALFRED_ALL')
-        sys.exit(wf.run(main_search_rfc, all=is_all))
+        sys.exit(wf.run(main_search_rfc))
     else:
         sys.exit(main_cli())
 
