@@ -71,10 +71,13 @@ def main_search_rfc(wf):
         out = dict(
             valid=True,
             title=r['name'],
+            largetext=r['name'],
             subtitle='{} ({})'.format(r['text'], r['status']),
             icon=ICON_WEB,
             uid=r['text'],
             quicklookurl=r['href'],
+            arg=r['href'],
+            copytext=r['href'],
         )
 
         wf.add_item(**out)
