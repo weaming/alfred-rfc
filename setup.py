@@ -64,7 +64,9 @@ setup(
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
-    install_requires=[],  # Optional
+    install_requires=[
+        'Alfred-Workflow'
+    ],  # Optional
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.
@@ -81,7 +83,7 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            'alfred-rfc=alfred_rfc.alfred:main',
+            'alfred-rfc=alfred_rfc.search:main',
         ],
     },
 

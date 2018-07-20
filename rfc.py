@@ -37,6 +37,7 @@ line_prog = re.compile(line_pattern)
 note_pattern = get_link_pattern('href', 'text')
 note_prog = re.compile(note_pattern)
 
+
 def process_line(line, n):
     link = line.split('</a>', 1)[0]
     matched = line_prog.match(line)
@@ -53,7 +54,15 @@ def process_line(line, n):
 
             replaced_text = note_prog.sub(r'\3', note_text)
             matched_dict['{}_with_text'.format(x)] = replaced_text
+
+            if x == 'note':
+                matched_dict['name'] = get_name_from_note(replaced_text)
+
     return matched_dict
+
+
+def get_name_from_note(note):
+    return note.split('. ', 1)[0] + '.'
 
 
 def main():
