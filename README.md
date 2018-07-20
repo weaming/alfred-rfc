@@ -22,5 +22,5 @@ Search RFCs using alfred
 
 
 * `⌘+c` copy link
-* `⌘+y` quick view the linke without open it in browser
+* `⌘+y` quick view the link without open it in browser
 
