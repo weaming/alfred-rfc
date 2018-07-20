@@ -12,7 +12,7 @@ build: generate-json
 	python setup.py sdist
 	python setup.py bdist_wheel --universal
 
-publish: clean build
+publish: clean build install
 	twine upload dist/* && git push --follow-tags
 
 uninstall:
