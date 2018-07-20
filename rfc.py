@@ -8,6 +8,7 @@ Get list from partial html text from https://tools.ietf.org/rfc/
 """
 import re
 import sys
+import json
 from pprint import pprint
 
 
@@ -22,25 +23,21 @@ def read_lines(path):
 
 def get_rfc_json():
     lines = read_lines('rfc_list.html')
-    return [process_line(l) for l in lines]
+    return [process_line(l, n) for n, l in enumerate(lines, start=1)]
 
 
-def get_link_pattern(prefix, link_href_name, link_text_name):
-    return r'\({} (<a href="(?P<{}>.+?)">(?P<{}>.+?)</a>(, )?)+\)'.format(
-        prefix, link_href_name, link_text_name)
+def get_link_pattern(link_href_name, link_text_name):
+    return r'(<a href="(?P<{}>.+?)">(?P<{}>.+?)</a>)'.format(
+        link_href_name, link_text_name)
 
 
-line_pattern = r'<a href="(?P<href>.+?)">(?P<text>.+?)</a> (?P<note>.+?)( \(Status: (?P<status>.+?)\) (?P<doi>.+?))?$'
+line_pattern = r'<a href="(?P<href>.+?)">(?P<text>.+?)</a> (?P<note>.+?)( \(?P<updates>Update[(s)|(d by)] (.+?)\))?( \(Status: (?P<status>.+?)\) \(DOI: (?P<doi>.+?)\))?$'
 line_prog = re.compile(line_pattern)
 
-note_pattern = r'(.+?)( {})?( {})? (.+?)$'.format(
-    get_link_pattern('Obsoletes', 'obsoletes_href', 'obsoletes_text'),
-    get_link_pattern('Updated by', 'updated_by_href', 'updated_by_text'),
-)
+note_pattern = get_link_pattern('href', 'text')
 note_prog = re.compile(note_pattern)
 
-
-def process_line(line):
+def process_line(line, n):
     link = line.split('</a>', 1)[0]
     matched = line_prog.match(line)
     if not matched:
@@ -48,28 +45,22 @@ def process_line(line):
         sys.exit(1)
 
     matched_dict = matched.groupdict()
-    if 'note' in matched_dict:
-        note_text = matched_dict['note']
-        note_matched = note_prog.match(note_text)
-        if not note_matched:
-            print(note_pattern)
-            print(note_text)
-            sys.exit(1)
+    for x in ['updates', 'note']:
+        if x in matched_dict:
+            note_text = matched_dict[x]
+            replaced_text = note_prog.sub(r'\2', note_text)
+            matched_dict['{}_with_url'.format(x)] = replaced_text
 
-        note_matched_dict = note_matched.groupdict()
-        if ('Updaetd' in note_text or 'Obsoletes' in note_text) and all(
-                x is None for x in note_matched_dict.values()):
-            print(note_pattern)
-            print(note_text)
-            sys.exit(1)
-
-        matched_dict['note'] = note_matched_dict
+            replaced_text = note_prog.sub(r'\3', note_text)
+            matched_dict['{}_with_text'.format(x)] = replaced_text
     return matched_dict
 
 
 def main():
     js = get_rfc_json()
-    pprint(js)
+    # pprint(js)
+    with open('rfc_list.json', 'w') as out:
+        out.write(json.dumps(js, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':
