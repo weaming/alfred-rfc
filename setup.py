@@ -61,6 +61,17 @@ setup(
     # Note that this is a string of words separated by whitespace, not a list.
     keywords='rfc alfred efficiency',  # Optional
 
+    # This field lists other packages that your project depends on to run.
+    # Any package you put here will be installed by pip when your project is
+    # installed, so they must be valid existing projects.
+    install_requires=[],  # Optional
+
+    # If there are data files included in your packages that need to be
+    # installed, specify them here.
+    package_data={  # Optional
+        'alfred_rfc': ['rfc_list.json'],
+    },
+
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # `pip` to create the appropriate form of executable for the target

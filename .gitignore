@@ -1,2 +1,5 @@
-*.py[cod]
 *.swp
+*.py[cod]
+build/
+dist/
+*.egg-info/
