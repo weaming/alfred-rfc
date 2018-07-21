@@ -64,15 +64,15 @@ def main_search_rfc(wf):
     elif not all:
         return
 
-    results = search_rfc(query, 30)
+    results = search_rfc(query, 1000)
 
-    for r in results:
+    for i, r in enumerate(results, start=1):
         # see https://www.deanishe.net/alfred-workflow/api/index.html#workflow.Workflow.add_item
         out = dict(
             valid=True,
             title=r['name'],
             largetext=r['name'],
-            subtitle='{} ({})'.format(r['text'], r['status']),
+            subtitle='{} | {} ({})'.format(i, r['text'], r['status']),
             icon=ICON_WEB,
             uid=r['text'],
             quicklookurl=r['href'],
