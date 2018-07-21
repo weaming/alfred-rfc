@@ -10,7 +10,7 @@ Search RFCs using alfred
 
 ## Screenshots
 
-* Search by keywords
+* Search by keywords, `Enter` to open in browser
 
 ![](screenshots/1.png)
 
