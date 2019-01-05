@@ -17,7 +17,7 @@ gh_repo = 'https://github.com/weaming/alfred-rfc'
 setup(
     name='alfred-rfc',  # Required
 
-    version='0.2.1',  # Required
+    version='0.2.2',  # Required
 
     # This is a one-line description or tagline of what your project does.
     description='Search RFCs using alfred',  # Required
