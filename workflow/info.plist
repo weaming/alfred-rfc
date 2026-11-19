@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>cafe.drink.dev.alfred.rfc</string>
+	<key>category</key>
+	<string>Internet</string>
+	<key>connections</key>
+	<dict>
+		<key>4286CA86-515A-4CA9-BDE5-3BDCCBEE6919</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>66CE6E98-CA3D-4410-85CD-8C457CEEEA5B</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>weaming</string>
+	<key>description</key>
+	<string>Search the RFC Editor index offline</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Search RFCs</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>66CE6E98-CA3D-4410-85CD-8C457CEEEA5B</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>rfc</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Searching for {query}</string>
+				<key>script</key>
+				<string>export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+if python3 -c 'import sys; sys.exit(sys.version_info &lt; (3, 9))' &gt;/dev/null 2&gt;&amp;1; then
+    exec python3 search.py --alfred -- "$1"
+fi
+printf '%s\n' '{"items":[{"title":"Python 3 is required","subtitle":"Install Python 3.9 or newer to search RFCs.","valid":false}]}'
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Search for {query}</string>
+				<key>title</key>
+				<string>Search RFCs</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>4286CA86-515A-4CA9-BDE5-3BDCCBEE6919</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Type rfc followed by a number or keywords. Return opens the document. Command-C copies its URL.</string>
+	<key>uidata</key>
+	<dict>
+		<key>4286CA86-515A-4CA9-BDE5-3BDCCBEE6919</key>
+		<dict>
+			<key>xpos</key>
+			<integer>140</integer>
+			<key>ypos</key>
+			<integer>70</integer>
+		</dict>
+		<key>66CE6E98-CA3D-4410-85CD-8C457CEEEA5B</key>
+		<dict>
+			<key>xpos</key>
+			<integer>540</integer>
+			<key>ypos</key>
+			<integer>70</integer>
+		</dict>
+	</dict>
+	<key>version</key>
+	<string>2.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/weaming/alfred-rfc</string>
+</dict>
+</plist>

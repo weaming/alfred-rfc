@@ -1,12 +1,12 @@
 # Alfred RFC
 
-Search RFCs using alfred
+Search the RFC Editor index offline in Alfred or from the command line.
 
 ## Installation
 
-1. `pip install -U alfred-rfc`
-2. Download [SearchRFCs.alfredworkflow](https://github.com/weaming/alfred-rfc/blob/master/SearchRFCs.alfredworkflow?raw=true) and install it.
-3. Modifiy the `$PATH` in installed workflow detail script filter if needed.
+Open [SearchRFCs.alfredworkflow](SearchRFCs.alfredworkflow) in Alfred with Powerpack enabled. The workflow uses Python 3.9 or newer and bundles its RFC index.
+
+Type `rfc` followed by a number or keywords, such as `rfc 9110` or `rfc quic transport`.
 
 ## Screenshots
 

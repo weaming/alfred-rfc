@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alfred-rfc"
+version = "0.3.0"
+description = "Search RFCs from Alfred or the command line"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "weaming" }]
+
+[project.scripts]
+alfred-rfc = "alfred_rfc.search:main"
+
+[project.urls]
+Source = "https://github.com/weaming/alfred-rfc"
+
+[tool.setuptools]
+packages = ["alfred_rfc"]
+
+[tool.setuptools.package-data]
+alfred_rfc = ["rfc_list.json"]

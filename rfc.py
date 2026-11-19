@@ -1,75 +1,58 @@
-#!/usr/bin/env python3
-# coding: utf-8
-"""
-Author       : weaming
-Created Time : 2018-07-20 10:36:02
-
-Get list from partial html text from https://tools.ietf.org/rfc/
-"""
-import re
-import sys
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = []
+# ///
+import argparse
 import json
-from pprint import pprint
+from pathlib import Path
+from urllib.request import urlopen
+from xml.etree import ElementTree
+
+INDEX_URL = 'https://www.rfc-editor.org/rfc-index.xml'
+NAMESPACE = {'rfc': 'https://www.rfc-editor.org/rfc-index'}
+INDEX_PATH = Path(__file__).resolve().parent / 'rfc_list.json'
 
 
-def read_lines(path):
-    text = open(path).read().strip()
-    lines = text.split('\n\n')
-    return [
-        l.strip().replace('\n', ' ').replace('   ', ' ').replace('  ', ' ')
-        for l in lines
-    ]
+def parse_index(source):
+    records = []
+    for entry in ElementTree.parse(source).getroot().findall('rfc:rfc-entry', NAMESPACE):
+        doc_id = entry.findtext('rfc:doc-id', namespaces=NAMESPACE)
+        title = entry.findtext('rfc:title', namespaces=NAMESPACE)
+        if not doc_id or not title:
+            continue
 
+        number = int(doc_id.removeprefix('RFC'))
+        abstract = entry.find('rfc:abstract', NAMESPACE)
+        note = ' '.join(' '.join(abstract.itertext()).split()) if abstract is not None else ''
+        records.append(
+            (
+                number,
+                {
+                    'text': f'RFC{number}',
+                    'name': title,
+                    'status': entry.findtext('rfc:current-status', 'UNKNOWN', NAMESPACE),
+                    'note_with_text': note,
+                    'href': f'https://www.rfc-editor.org/rfc/rfc{number}.html',
+                },
+            )
+        )
 
-def get_rfc_json():
-    lines = read_lines('rfc_list.html')
-    return [process_line(l, n) for n, l in enumerate(lines, start=1)]
-
-
-def get_link_pattern(link_href_name, link_text_name):
-    return r'(<a href="(?P<{}>.+?)">(?P<{}>.+?)</a>)'.format(
-        link_href_name, link_text_name)
-
-
-line_pattern = r'<a href="(?P<href>.+?)">(?P<text>.+?)</a> (?P<note>.+?)( \(?P<updates>Update[(s)|(d by)] (.+?)\))?( \(Status: (?P<status>.+?)\) \(DOI: (?P<doi>.+?)\))?$'
-line_prog = re.compile(line_pattern)
-
-note_pattern = get_link_pattern('href', 'text')
-note_prog = re.compile(note_pattern)
-
-
-def process_line(line, n):
-    link = line.split('</a>', 1)[0]
-    matched = line_prog.match(line)
-    if not matched:
-        print(line)
-        sys.exit(1)
-
-    matched_dict = matched.groupdict()
-    for x in ['updates', 'note']:
-        if x in matched_dict:
-            note_text = matched_dict[x]
-            replaced_text = note_prog.sub(r'\2', note_text)
-            matched_dict['{}_with_url'.format(x)] = replaced_text
-
-            replaced_text = note_prog.sub(r'\3', note_text)
-            matched_dict['{}_with_text'.format(x)] = replaced_text
-
-            if x == 'note':
-                matched_dict['name'] = get_name_from_note(replaced_text)
-
-    return matched_dict
-
-
-def get_name_from_note(note):
-    return note.split('. ', 1)[0] + '.'
+    if not records:
+        raise ValueError('RFC Editor index contains no RFC entries')
+    return [record for _, record in sorted(records, key=lambda pair: pair[0])]
 
 
 def main():
-    js = get_rfc_json()
-    # pprint(js)
-    with open('rfc_list.json', 'w') as out:
-        out.write(json.dumps(js, ensure_ascii=False, indent=2))
+    parser = argparse.ArgumentParser(description='Refresh the bundled RFC Editor index.')
+    parser.add_argument('xml', nargs='?', type=Path, help='local RFC Editor XML index')
+    args = parser.parse_args()
+    with args.xml.open('rb') if args.xml else urlopen(INDEX_URL, timeout=30) as source:
+        records = parse_index(source)
+
+    lines = ',\n'.join(json.dumps(record, ensure_ascii=False) for record in records)
+    INDEX_PATH.write_text(f'[\n{lines}\n]\n', encoding='utf-8')
+    print(f'Indexed {len(records)} RFCs')
 
 
 if __name__ == '__main__':
